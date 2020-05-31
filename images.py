@@ -19,7 +19,8 @@ import csv
 from scipy import ndimage
 from six.moves import urllib
 from PIL import Image
-from scipy.misc import imsave
+import imageio
+# from scipy.misc import imsave
 
 #Url for downloading MNIST dataset
 URL = 'http://yann.lecun.com/exdb/mnist/'
@@ -34,13 +35,13 @@ Returns path to file
 '''
 def download(filename):
     #Check if directory exists
-    if not tf.gfile.Exists(DATA_DIRECTORY):
-        tf.gfile.MakeDirs(DATA_DIRECTORY)
+    if not tf.io.gfile.exists(DATA_DIRECTORY):
+        tf.io.gfile.makedirs(DATA_DIRECTORY)
     filepath = os.path.join(DATA_DIRECTORY, filename)
     #Check if file exists, if not download
-    if not tf.gfile.Exists(filepath):
+    if not tf.io.gfile.exists(filepath):
         filepath, _ = urllib.request.urlretrieve(URL + filename, filepath)
-        with tf.gfile.GFile(filepath) as f:
+        with tf.io.gfile.GFile(filepath) as f:
             size = f.size()
         print('Successfully downloaded', filename, size, 'bytes.')
     return filepath
@@ -88,8 +89,8 @@ def expand_training_data(images, labels):
     expanded_images = []
     expanded_labels = []
     directory = os.path.dirname("data/New")
-    if not tf.gfile.Exists("data/New"):
-        tf.gfile.MakeDirs("data/New")
+    if not tf.io.gfile.exists("data/New"):
+        tf.io.gfile.makedirs("data/New")
     k = 0 # counter
     for x, y in zip(images, labels):
         #print(x.shape)
@@ -160,7 +161,7 @@ def prepare_MNIST_data(use_data_augmentation=True):
         writer = csv.writer(csvFile, delimiter=',', quotechar='"')
         for i in range(len(train_data)):
             if i<20:
-                imsave("data/train-images/" + str(i) + ".jpg", train_data[i][:,:,0])
+                imageio.imwrite("data/train-images/" + str(i) + ".jpg", train_data[i][:,:,0])
             writer.writerow(["train-images/" + str(i) + ".jpg", train_labels[i]])
     # repeat for test data
     with open("data/test-labels.csv", 'w') as csvFile:
